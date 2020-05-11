@@ -1,0 +1,15 @@
+# Project exclude paths
+/.gradle/
+/Problems/Getting submaps/out/
+/Problems/Getting submaps/out/production/classes/
+/Problems/Kidnapper of Ice cream/out/
+/Problems/Kidnapper of Ice cream/out/production/classes/
+/Problems/Multiset/out/
+/Problems/Multiset/out/production/classes/
+/Problems/Sherlock Holmes and the mystery of anagrams/out/
+/Problems/Sherlock Holmes and the mystery of anagrams/out/production/classes/
+/Problems/Squares list/out/
+/Problems/Squares list/out/production/classes/
+/Web Quiz Engine/task/build/
+/Web Quiz Engine/task/out/
+/Web Quiz Engine/task/out/production/classes/

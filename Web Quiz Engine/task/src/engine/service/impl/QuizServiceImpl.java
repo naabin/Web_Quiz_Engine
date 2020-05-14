@@ -2,6 +2,7 @@ package engine.service.impl;
 
 import engine.model.*;
 import engine.repository.AnswerRepository;
+import engine.repository.CompletionRepository;
 import engine.repository.OptionsRepository;
 import engine.repository.QuizRepository;
 import engine.responsemapper.QuizFeedback;
@@ -24,14 +25,17 @@ public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizzes;
     private final OptionsRepository optionsRepository;
     private final AnswerRepository answerRepository;
+    private final CompletionRepository completionRepository;
 
     @Autowired
     public QuizServiceImpl(QuizRepository quizzes,
                            OptionsRepository optionsRepository,
-                           AnswerRepository answerRepository) {
+                           AnswerRepository answerRepository,
+                           CompletionRepository completionRepository) {
         this.quizzes = quizzes;
         this.optionsRepository = optionsRepository;
         this.answerRepository = answerRepository;
+        this.completionRepository = completionRepository;
     }
 
     @Override
@@ -62,14 +66,10 @@ public class QuizServiceImpl implements QuizService {
         return this.quizzes.findAll(pageable);
     }
 
-    @Override
-    public Page<Quiz> getAllCompleted(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return this.quizzes.findByCompleted(true, pageable);
-    }
 
     @Override
     public QuizFeedback checkAnswer(Integer id, List<Integer> givenAnswers) {
+
         Quiz quiz;
         if (getById(id).isEmpty()) {
             return new QuizFeedback(false, "Wrong answer! Please, try again.");
@@ -79,7 +79,7 @@ public class QuizServiceImpl implements QuizService {
         List<Answers> storedAnswers = quiz.getAnswers();
         List<Integer> answers = storedAnswers.stream().map(Answers::getAnswer).collect(Collectors.toList());
         if (answers.size() != givenAnswers.size()) {
-            return new QuizFeedback(true, "Congratulations, you're right!");
+            return new QuizFeedback(false, "Wrong answer! Please, try again.");
         } else {
             Collections.sort(answers);
             Collections.sort(givenAnswers);
@@ -91,7 +91,6 @@ public class QuizServiceImpl implements QuizService {
         } else {
             return new QuizFeedback(false, "Wrong answer! Please, try again.");
         }
-
     }
 
     @Override
@@ -104,9 +103,12 @@ public class QuizServiceImpl implements QuizService {
         Optional<Quiz> byId = getById(id);
         if (byId.isPresent()){
             Quiz quiz = byId.get();
-            quiz.setCompleted(true);
-            quiz.setCompletedAt(LocalDateTime.now());
-            quizzes.saveAndFlush(quiz);
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Completion completion = new Completion();
+            completion.setQuiz(quiz);
+            completion.setCompletedAt(LocalDateTime.now());
+            completion.setUser(user);
+            this.completionRepository.save(completion);
         }
     }
 }

@@ -1,13 +1,11 @@
 package engine.controller;
 
-import engine.model.Answers;
-import engine.model.Options;
-import engine.model.Quiz;
-import engine.model.User;
+import engine.model.*;
 import engine.requestmapper.AnswerRequest;
 import engine.requestmapper.QuizRequest;
 import engine.responsemapper.QuizFeedback;
 import engine.responsemapper.QuizResponse;
+import engine.service.CompletionService;
 import engine.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,10 +24,12 @@ import java.util.Optional;
 public class QuizController {
 
     private final QuizService quizService;
+    private final CompletionService completionService;
 
     @Autowired
-    public QuizController(QuizService quizService) {
+    public QuizController(QuizService quizService, CompletionService completionService) {
         this.quizService = quizService;
+        this.completionService = completionService;
     }
 
     @GetMapping
@@ -65,11 +65,11 @@ public class QuizController {
     }
 
     @GetMapping("/completed")
-    private ResponseEntity<Page<Quiz>> getAllCompleted(
+    private ResponseEntity<Page<Completion>> getAllCompleted(
             @RequestParam(value = "page", defaultValue = "0", required = false) Integer page,
-            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize
     ){
-        Page<Quiz> allCompleted = this.quizService.getAllCompleted(page, pageSize);
+        Page<Completion> allCompleted = this.completionService.getAllCompleted(page, pageSize);
         return ResponseEntity.ok().body(allCompleted);
     }
 
@@ -114,6 +114,8 @@ public class QuizController {
         if (quiz.isPresent()){
             Quiz q = quiz.get();
             if (q.getUser().getId().equals(user.getId())){
+                List<Completion> completedByQuizId = this.completionService.findCompletedByQuizId(q.getId());
+                this.completionService.deleteAllCompletion(completedByQuizId);
                 this.quizService.deleteQuiz(q);
                 return ResponseEntity.noContent().build();
             } else {

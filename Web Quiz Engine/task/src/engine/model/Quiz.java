@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -32,25 +31,15 @@ public class Quiz {
     @JsonIgnoreProperties("quiz")
     private List<Answers> answers;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Completion completion;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties("quizzes")
     private User user;
-
-    @Column
-    private Boolean completed;
-
-    @Column
-    @UpdateTimestamp
-    private LocalDateTime completedAt;
 
     public Quiz() {
 
-    }
-
-    public Quiz(Integer id, LocalDateTime completedAt){
-        this.id = id;
-        this.completedAt = completedAt;
     }
 
     public Integer getId() {
@@ -93,14 +82,6 @@ public class Quiz {
         this.user = user;
     }
 
-    public LocalDateTime getCompletedAt() {
-        return completedAt;
-    }
-
-    public void setCompletedAt(LocalDateTime completedAt) {
-        this.completedAt = completedAt;
-    }
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public List<Answers> getAnswers() {
         return answers;
@@ -110,12 +91,12 @@ public class Quiz {
         this.answers = answers;
     }
 
-    public Boolean isCompleted() {
-        return completed;
+    public Completion getCompletion() {
+        return completion;
     }
 
-    public void setCompleted(Boolean completed) {
-        this.completed = completed;
+    public void setCompletion(Completion completion) {
+        this.completion = completion;
     }
 
     @Override

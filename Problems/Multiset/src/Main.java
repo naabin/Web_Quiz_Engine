@@ -1,7 +1,4 @@
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 interface Multiset<E> {
 
@@ -60,8 +57,6 @@ interface Multiset<E> {
      * The set of unique elements (without repeating)
      */
     Set<E> toSet();
-
-//    void print();
 }
 
 class HashMultiset<E> implements Multiset<E> {
@@ -71,76 +66,45 @@ class HashMultiset<E> implements Multiset<E> {
     @Override
     public void add(E elem) {
         // implement the method
-        if (contains(elem)) {
-            Integer integer = map.get(elem);
-            map.replace(elem, ++integer);
-        } else {
-            map.put(elem, 1);
-        }
     }
 
     @Override
     public void remove(E elem) {
         // implement the method
-        if (contains(elem)) {
-            Integer integer = map.get(elem);
-            if (integer > 1) {
-                map.replace(elem, --integer);
-            } else {
-                map.remove(elem);
-            }
-        }
     }
 
     @Override
     public void union(Multiset<E> other) {
         // implement the method
-        Set<E> es = other.toSet();
-        es.forEach(e -> {
-            if (!contains(e)) {
-                add(e);
-            }
-        });
     }
 
     @Override
     public void intersect(Multiset<E> other) {
         // implement the method
-        Set<E> es = other.toSet();
-        Map<E, Integer> newHashMap = Collections.synchronizedMap(new HashMap<>());
-        for (E e : es) {
-            if (contains(e)) {
-                int multiplicity = other.getMultiplicity(e);
-                int multiplicity1 = this.getMultiplicity(e);
-                int max = Math.min(multiplicity, multiplicity1);
-                newHashMap.put(e, max);
-            }
-        }
-        this.map = newHashMap;
     }
 
     @Override
     public int getMultiplicity(E elem) {
         // implement the method
-       return map.getOrDefault(elem, 0);
+        return 0;
     }
 
     @Override
     public boolean contains(E elem) {
         // implement the method
-        return map.containsKey(elem);
+        return false;
     }
 
     @Override
     public int numberOfUniqueElements() {
         // implement the method
-        return map.size();
+        return 0;
     }
 
     @Override
     public int size() {
         // implement the method
-        return map.values().stream().mapToInt(i -> i).sum();
+        return 0;
     }
 
     @Override
@@ -149,37 +113,4 @@ class HashMultiset<E> implements Multiset<E> {
         // It is thrown when we try to iterate over elements of Map and modify them at the same time
         return new HashSet<>(map.keySet());
     }
-
-//    public void print() {
-//        System.out.print("{");
-//        map.forEach((k, v) -> System.out.print(k + ":" + v + " "));
-//        System.out.print("}");
-//    }
-//
-//    public static void main(String[] args) {
-//        Multiset<String> multiset1 = new HashMultiset<>();
-//        multiset1.add("a");
-//        multiset1.add("a");
-//        multiset1.add("b");
-//        multiset1.add("b");
-//        multiset1.add("b");
-//        multiset1.add("c");
-//
-//        multiset1.print();
-//        System.out.println();
-//        System.out.println(multiset1.numberOfUniqueElements());
-//        System.out.println(multiset1.size());
-//        System.out.println("Mpc of a "  + multiset1.getMultiplicity("a"));
-//        multiset1.remove("a");
-//        multiset1.remove("a");
-//        System.out.println("Mpc of a "  + multiset1.getMultiplicity("a"));
-//        System.out.println(multiset1.numberOfUniqueElements());
-//        System.out.println(multiset1.size());
-//        multiset1.print();
-//        System.out.println();
-//        multiset1.print();
-//        System.out.println();
-//
-//    }
-
 }

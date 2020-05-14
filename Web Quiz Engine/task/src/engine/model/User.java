@@ -1,5 +1,6 @@
 package engine.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,8 +31,8 @@ public class User implements UserDetails {
     @Size(min = 5)
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("user")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Quiz> quizzes;
 
     public Integer getId() {
